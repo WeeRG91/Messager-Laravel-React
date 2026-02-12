@@ -1,0 +1,84 @@
+import { Link, usePage } from "@inertiajs/react";
+import clsx from "clsx";
+import {
+  BsArchive,
+  BsBoxArrowRight,
+  BsChat,
+  BsGear,
+  BsPeople,
+  BsPersonCircle,
+} from "react-icons/bs";
+import BadgeNotification from "@/Components/Chats/BadgeNotification";
+import Dropdown from "@/Components/Dropdown";
+import { PageProps } from "@/types";
+
+export default function SidebarMini() {
+  const { user } = usePage<PageProps>().props.auth;
+
+  return (
+    <div className="order-2 mt-auto flex flex-row justify-between gap-2 bg-background sm:order-1 sm:mt-0 sm:flex-col sm:items-center sm:justify-center sm:p-2">
+      <Link
+        href={route("chats.index")}
+        className={clsx(
+          "relative flex flex-1 items-center justify-center rounded-lg p-3 transition-all hover:bg-secondary-default sm:flex-initial",
+          route().current("chats.*") && "bg-secondary-default",
+        )}
+      >
+        <BsChat className="h-6 w-6" />
+        <BadgeNotification />
+      </Link>
+
+      <Link
+        href={route("chats.index")}
+        className={clsx(
+          "relative flex flex-1 items-center justify-center rounded-lg p-3 transition-all hover:bg-secondary-default sm:flex-initial",
+          route().current("contacts.index") && "bg-secondary-default",
+        )}
+      >
+        <BsPeople className="h-6 w-6" />
+      </Link>
+
+      <Link
+        href={route("chats.index")}
+        className={clsx(
+          "relative flex flex-1 items-center justify-center rounded-lg p-3 transition-all hover:bg-secondary-default sm:flex-initial",
+          route().current("archived-chats.index") && "bg-secondary-default",
+        )}
+      >
+        <BsArchive className="h-6 w-6" />
+      </Link>
+
+      <div className="relative flex flex-1 cursor-pointer items-center justify-center rounded-lg px-2 transition-all hover:bg-secondary-default sm:mt-auto sm:flex-initial sm:px-0 sm:hover:bg-transparent">
+        <Dropdown>
+          <Dropdown.Trigger>
+            <img
+              src={user.avatar}
+              alt={user.name}
+              className="h-10 w-10 rounded-full border border-secondary-default sm:h-11 sm:w-11"
+            />
+          </Dropdown.Trigger>
+          <Dropdown.Content align="top-left" contentClasses="mb-12 sm:mb-10">
+            <Dropdown.Button>
+              <div className="flex items-center gap-2">
+                <BsGear />
+                Preferences
+              </div>
+            </Dropdown.Button>
+            <Dropdown.Link href={route("profile.edit")}>
+              <div className="flex items-center gap-2">
+                <BsPersonCircle />
+                Profile
+              </div>
+            </Dropdown.Link>
+            <Dropdown.Link href={route("logout")} method="post" as="button">
+              <div className="flex items-center gap-2">
+                <BsBoxArrowRight />
+                Log out
+              </div>
+            </Dropdown.Link>
+          </Dropdown.Content>
+        </Dropdown>
+      </div>
+    </div>
+  );
+}
