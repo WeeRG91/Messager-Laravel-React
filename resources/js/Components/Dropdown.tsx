@@ -54,7 +54,7 @@ const Trigger = ({ children }: PropsWithChildren) => {
 const Content = ({
   align = "right",
   width = "48",
-  contentClasses = "py-1 bg-white",
+  contentClasses = "py-1 bg-background",
   children,
 }: PropsWithChildren<{
   align?: "left" | "right" | "top-left" | "top-right";
@@ -98,7 +98,8 @@ const Content = ({
         >
           <div
             className={
-              `rounded-lg bg-background p-2 ring-1 ring-black dark:ring-white ring-opacity-5 dark:ring-opacity-5 ` + contentClasses
+              `rounded-lg bg-background !p-2 shadow-md ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-5 ` +
+              contentClasses
             }
           >
             {children}

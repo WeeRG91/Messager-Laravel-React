@@ -1,4 +1,4 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 import clsx from "clsx";
 import {
   BsArchive,
@@ -10,10 +10,16 @@ import {
 } from "react-icons/bs";
 import BadgeNotification from "@/Components/Chats/BadgeNotification";
 import Dropdown from "@/Components/Dropdown";
-import { PageProps } from "@/types";
+import { useAppContext } from "@/Contexts/app-context";
+import { useModalContext } from "@/Contexts/modal-context";
 
 export default function SidebarMini() {
-  const { user } = usePage<PageProps>().props.auth;
+  const { auth } = useAppContext();
+  const { openModal } = useModalContext();
+
+  const openPreference = () => {
+    openModal({view: "PREFERENCE", size: "lg"})
+  }
 
   return (
     <div className="order-2 mt-auto flex flex-row justify-between gap-2 bg-background sm:order-1 sm:mt-0 sm:flex-col sm:items-center sm:justify-center sm:p-2">
@@ -52,13 +58,13 @@ export default function SidebarMini() {
         <Dropdown>
           <Dropdown.Trigger>
             <img
-              src={user.avatar}
-              alt={user.name}
+              src={auth.avatar}
+              alt={auth.name}
               className="h-10 w-10 rounded-full border border-secondary-default sm:h-11 sm:w-11"
             />
           </Dropdown.Trigger>
           <Dropdown.Content align="top-left" contentClasses="mb-12 sm:mb-10">
-            <Dropdown.Button>
+            <Dropdown.Button onClick={openPreference}>
               <div className="flex items-center gap-2">
                 <BsGear />
                 Preferences
