@@ -32,7 +32,7 @@ export default function Index({
   };
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-8 sm:gap-12 p-6 sm:p-8 font-['Inter'] text-foreground">
+    <div className="bg-background flex min-h-screen max-w-7xl mx-auto flex-col gap-8 sm:gap-12 p-6 sm:p-8 font-['Inter'] text-foreground">
       <div>
         <Link href="/">
           <ApplicationLogo className="h-10" />
@@ -66,7 +66,7 @@ export default function Index({
                 type="email"
                 name="email"
                 value={data.email}
-                className="w-full border-secondary-default bg-secondary-default dark:border-secondary-default"
+                className="w-full border-secondary-default bg-background dark:border-secondary-default"
                 autoComplete="username"
                 isFocused={true}
                 onChange={(e) => setData("email", e.target.value)}
@@ -82,7 +82,7 @@ export default function Index({
                 type="password"
                 name="password"
                 value={data.password}
-                className="w-full border-secondary-default bg-secondary-default dark:border-secondary-default"
+                className="w-full border-secondary-default bg-background dark:border-secondary-default"
                 autoComplete="current-password"
                 onChange={(e) => setData("password", e.target.value)}
                 placeholder="Enter your password"
