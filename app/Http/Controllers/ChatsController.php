@@ -19,7 +19,24 @@ class ChatsController extends Controller
     public function index()
     {
         try {
-            return Inertia::render('Chats/Index');
+            $chats = $this->chats();
+
+            return Inertia::render('Chats/Index', [
+                'chats' => $chats
+            ]);
+        } catch (Exception $e) {
+            dd($e->getMessage());
+        }
+    }
+
+    public function show(string $userId)
+    {
+        try {
+            $chats = $this->chats();
+
+            return Inertia::render('Chats/Index', [
+                'chats' => $chats
+            ]);
         } catch (Exception $e) {
             dd($e->getMessage());
         }

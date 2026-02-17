@@ -1,3 +1,5 @@
+import { Paginate } from "@/types/paginate";
+
 export type Chat = {
   id: string;
   name: string;
@@ -16,3 +18,5 @@ export enum CHAT_TYPE {
   CHATS = "chats",
   GROUP_CHATS = "group_chats",
 }
+
+export type ChatPaginate = Paginate<Chat[]>;
