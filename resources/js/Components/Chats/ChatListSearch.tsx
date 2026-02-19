@@ -1,5 +1,8 @@
 import { BiSearch } from "react-icons/bi";
-import { ChangeEvent, ChangeEventHandler } from "react";
+import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
+import { useChatContext } from "@/Contexts/chat-context";
+import { fetchChats } from "@/Api/chat";
+import { useDebounce } from "@/Hooks/use-debounce";
 
 type ChatListSearchProps = {
   search: string;
@@ -10,9 +13,23 @@ export default function ChatListSearch({
   search,
   setSearch,
 }: ChatListSearchProps) {
-  const handleOnchange: ChangeEventHandler<HTMLInputElement> = (e) =>  {
+  const { setChats, setPaginate } = useChatContext();
+  const [isFirstLoading, setIsFirstLoading] = useState(true);
+  const [debouncedSearch] = useDebounce(search, 300);
+
+  useEffect(() => {
+    setIsFirstLoading(false);
+    if (!isFirstLoading) {
+      fetchChats(debouncedSearch).then((response) => {
+        setChats(response.data.data.data);
+        setPaginate(response.data.data);
+      });
+    }
+  }, [debouncedSearch]);
+
+  const handleOnchange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setSearch(e.target.value);
-  }
+  };
 
   return (
     <div className="relative flex items-center px-2 py-0">

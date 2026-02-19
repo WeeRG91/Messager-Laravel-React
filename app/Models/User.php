@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -48,5 +49,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    protected function isOnline(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => (bool) $value && (bool) $attributes['active_status'],
+            set: fn ($value) => (int) $value,
+        );
+    }
+
+    protected function activeStatus(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => (bool) $value,
+            set: fn ($value) => (int) $value,
+        );
     }
 }

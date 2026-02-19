@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->boolean('active_status')->default(1);
             $table->boolean('is_online')->default(0);
-            $table->dateTime('last_seen')->nullable(now());
+            $table->dateTime('last_seen')->default(now());
             $table->rememberToken();
             $table->timestamps();
         });
