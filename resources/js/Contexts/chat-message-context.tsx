@@ -1,4 +1,8 @@
-import { ChatProfile } from "@/types/chat-message";
+import {
+  ChatMessage,
+  ChatMessagePaginate,
+  ChatProfile,
+} from "@/types/chat-message";
 import {
   createContext,
   PropsWithChildren,
@@ -10,9 +14,13 @@ import {
 import { usePage } from "@inertiajs/react";
 import { ChatMessagePageProps } from "@/types";
 import { CHAT_TYPE } from "@/types/chat";
-import { User } from "@/types/user";
+import { InitialPaginate } from "@/types/paginate";
 
 type State = {
+  messages: ChatMessage[];
+  paginate: ChatMessagePaginate;
+  setMessages: (value: ChatMessage[]) => void;
+  setPaginate: (value: ChatMessagePaginate) => void;
   user: ChatProfile;
   showSidebarRight: boolean;
   setUser: (value: ChatProfile) => void;
@@ -24,7 +32,15 @@ type Action =
       type: "SET_USER";
       payload: ChatProfile;
     }
-  | { type: "TOGGLE_SIDEBAR_RIGHT" };
+  | { type: "TOGGLE_SIDEBAR_RIGHT" }
+  | {
+      type: "SET_MESSAGES";
+      payload: ChatMessage[];
+    }
+  | {
+      type: "SET_PAGINATE";
+      payload: ChatMessagePaginate;
+    };
 
 const initialState: State = {
   user: {
@@ -47,10 +63,16 @@ const initialState: State = {
       name: "",
     },
     members_count: 0,
+    created_at: "",
+    updated_at: "",
   },
   showSidebarRight: false,
   setUser: () => {},
   toggleSidebarRight: () => {},
+  messages: [],
+  paginate: InitialPaginate,
+  setMessages: () => {},
+  setPaginate: () => {},
 };
 
 const reducer = (state = initialState, action: Action) => {
@@ -67,6 +89,16 @@ const reducer = (state = initialState, action: Action) => {
       return {
         ...state,
         showSidebarRight: !value,
+      };
+    case "SET_MESSAGES":
+      return {
+        ...state,
+        messages: action.payload,
+      };
+    case "SET_PAGINATE":
+      return {
+        ...state,
+        paginate: action.payload,
       };
   }
 };
@@ -88,15 +120,28 @@ export const ChatMessageProvider = ({ children }: PropsWithChildren) => {
     dispatch({ type: "TOGGLE_SIDEBAR_RIGHT" });
   };
 
+  const setMessages = (value: ChatMessage[]) => {
+    dispatch({ type: "SET_MESSAGES", payload: value });
+  };
+  const setPaginate = (value: ChatMessagePaginate) => {
+    dispatch({ type: "SET_PAGINATE", payload: value });
+  };
+
   useEffect(() => {
     setIsFirstLoading(false);
     setUser(props.user);
+    setMessages(props.messages.data);
+    setPaginate(props.messages);
   }, []);
 
   const value = {
     ...state,
     user: isFirstLoading ? props.user : state.user,
     showSidebarRight: localStorage.getItem("toggle-sidebar-right") === "true",
+    messages: isFirstLoading ? props.messages.data : state.messages,
+    paginate: props.paginate ? props.messages : state.paginate,
+    setMessages,
+    setPaginate,
     setUser,
     toggleSidebarRight,
   };

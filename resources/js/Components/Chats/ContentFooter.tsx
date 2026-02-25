@@ -1,11 +1,25 @@
 import { BsEmojiSmile, BsPlus } from "react-icons/bs";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  KeyboardEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { BiSend } from "react-icons/bi";
 import clsx from "clsx";
+import { saveMessage } from "@/Api/chat-message";
+import { useChatMessageContext } from "@/Contexts/chat-message-context";
+import { useChatContext } from "@/Contexts/chat-context";
 
 export default function ContentFooter() {
+  const { refreshChats } = useChatContext();
+  const { user, messages, setMessages } = useChatMessageContext();
+
   const [message, setMessage] = useState("");
   const [textareaHeight, setTextareaHeight] = useState(48);
+  const [processing, setProcessing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -22,7 +36,7 @@ export default function ContentFooter() {
 
     if (onPressEnter && !e.shiftKey) {
       e.preventDefault();
-      // Submit form
+      handleOnSubmit(e as unknown as FormEvent<HTMLFormElement>);
     }
 
     if (onPressBackspace) {
@@ -48,8 +62,29 @@ export default function ContentFooter() {
     }
   };
 
+  const handleOnSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setProcessing(true);
+
+    if (message === "") return;
+
+    saveMessage({ user, message }).then((response) => {
+      setMessage("");
+      setTextareaHeight(48);
+      textareaRef.current?.focus();
+      setProcessing(false);
+
+      const data = response.data.data;
+      setMessages([...messages, data]);
+      refreshChats();
+    });
+  };
+
   return (
-    <form className="flex items-end gap-2 bg-background p-2 text-foreground">
+    <form
+      className="flex items-end gap-2 bg-background p-2 text-foreground"
+      onSubmit={handleOnSubmit}
+    >
       <label
         htmlFor="file"
         className="mb-1 cursor-pointer rounded-full p-2 text-primary-default transition-all hover:bg-secondary-default focus:bg-secondary-default"

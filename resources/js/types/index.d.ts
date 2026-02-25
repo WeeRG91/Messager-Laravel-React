@@ -22,7 +22,7 @@ export type ChatPageProps = PageProps<{ chats: ChatPaginate }>;
 export type ChatMessagePageProps = PageProps<{
   chats: ChatPaginate;
   user: ChatProfile;
-  message: ChatMessagePaginate;
+  messages: ChatMessagePaginate;
   media: Attachment[];
   files: Attachment;
   links: Link[];

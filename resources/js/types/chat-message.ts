@@ -44,4 +44,4 @@ export type Attachment = {
 
 export type Link = string;
 
-export type ChatMessagePaginate = Paginate<ChatMessage>;
+export type ChatMessagePaginate = Paginate<ChatMessage[]>;

@@ -22,6 +22,6 @@ export const InitialPaginate = {
   total: 0,
   first_page_url: "",
   last_page_url: "",
-  next_page_url: "",
-  prev_page_url: "",
+  next_page_url: null,
+  prev_page_url: null,
 };

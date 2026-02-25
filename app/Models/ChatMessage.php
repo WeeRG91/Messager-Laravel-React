@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class ChatMessage extends Model
@@ -26,6 +27,11 @@ class ChatMessage extends Model
     public function to(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(ChatMessageFile::class, 'chat_id');
     }
 
     /**

@@ -69,9 +69,9 @@ export const ChatProvider = ({ children }: PropsWithChildren) => {
   };
 
   useEffect(() => {
-    setIsFirstLoading(false)
-    setChats(props.chats.data)
-    setPaginate(props.chats)
+    setIsFirstLoading(false);
+    setChats(props.chats.data);
+    setPaginate(props.chats);
   }, []);
 
   const value = {
@@ -80,7 +80,7 @@ export const ChatProvider = ({ children }: PropsWithChildren) => {
     paginate: props.paginate ? props.chats : state.paginate,
     setChats,
     setPaginate,
-  }
+  };
 
-  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>
+  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };
