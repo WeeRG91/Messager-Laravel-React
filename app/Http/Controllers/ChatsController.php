@@ -57,6 +57,7 @@ class ChatsController extends Controller
                 'messages' => $messages,
             ]);
         } catch (Exception $e) {
+            report($e);
             dd($e->getMessage());
         }
     }

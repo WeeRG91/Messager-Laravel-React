@@ -12,14 +12,23 @@ import clsx from "clsx";
 import { saveMessage } from "@/Api/chat-message";
 import { useChatMessageContext } from "@/Contexts/chat-message-context";
 import { useChatContext } from "@/Contexts/chat-context";
+import EmojiPicker, { Theme } from "emoji-picker-react";
+import { useAppContext } from "@/Contexts/app-context";
 
-export default function ContentFooter() {
+type ContentFooterProps = {
+  scrollToBottom: () => void;
+};
+
+export default function ContentFooter({ scrollToBottom }: ContentFooterProps) {
+  const { theme } = useAppContext();
   const { refreshChats } = useChatContext();
   const { user, messages, setMessages } = useChatMessageContext();
 
   const [message, setMessage] = useState("");
   const [textareaHeight, setTextareaHeight] = useState(48);
   const [processing, setProcessing] = useState(false);
+  const [isEmojiOpen, setIsEmojiOpen] = useState(false);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -66,18 +75,30 @@ export default function ContentFooter() {
     e.preventDefault();
     setProcessing(true);
 
-    if (message === "") return;
+    if (message === "" || processing) return;
 
-    saveMessage({ user, message }).then((response) => {
-      setMessage("");
-      setTextareaHeight(48);
-      textareaRef.current?.focus();
-      setProcessing(false);
+    saveMessage({ user, message })
+      .then((response) => {
+        setMessage("");
+        setTextareaHeight(48);
+        setIsEmojiOpen(false);
+        textareaRef.current?.focus();
 
-      const data = response.data.data;
-      setMessages([...messages, data]);
-      refreshChats();
-    });
+        const data = response.data.data;
+        setMessages([...messages, data]);
+
+        refreshChats();
+        setTimeout(scrollToBottom, 100);
+      })
+      .finally(() => setProcessing(false));
+  };
+
+  const toggleEmoji = () => {
+    setIsEmojiOpen(!isEmojiOpen);
+  };
+
+  const handleOnEmojiClick = (emoji: string) => {
+    setMessage((prevMsg) => prevMsg + emoji);
   };
 
   return (
@@ -103,9 +124,25 @@ export default function ContentFooter() {
         <button
           className="absolute right-2 mb-2 text-primary-default"
           type="button"
+          onClick={toggleEmoji}
         >
           <BsEmojiSmile className="h-8 w-8" />
         </button>
+
+        <div
+          className={clsx(
+            "absolute bottom-14 right-0 z-10",
+            isEmojiOpen ? "block" : "hidden",
+          )}
+        >
+          <EmojiPicker
+            theme={(theme === "system" ? "auto" : theme) as Theme}
+            skinTonesDisabled={true}
+            height={400}
+            onEmojiClick={({ emoji }) => handleOnEmojiClick(emoji)}
+          ></EmojiPicker>
+        </div>
+
         <textarea
           placeholder="Aa"
           value={message}
@@ -121,11 +158,14 @@ export default function ContentFooter() {
 
       <button
         type="submit"
+        disabled={processing}
         className={clsx(
           "mb-1 flex rounded-full p-2 transition-all disabled:cursor-not-allowed",
           message.trim().length === 0 &&
             "text-primary-default hover:bg-secondary-default focus:bg-secondary-default",
-          message.trim().length > 0 && "bg-primary-default text-white",
+          message.trim().length > 0 &&
+            !processing &&
+            "bg-primary-default text-white",
         )}
       >
         <BiSend className="h-6 w-6" />

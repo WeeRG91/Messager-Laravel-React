@@ -10,6 +10,7 @@ import {
 } from "react";
 import { usePage } from "@inertiajs/react";
 import { ChatPageProps } from "@/types";
+import { fetchChats } from "@/Api/chat";
 
 type State = {
   chats: Chat[];
@@ -68,6 +69,11 @@ export const ChatProvider = ({ children }: PropsWithChildren) => {
     dispatch({ type: "SET_PAGINATE", payload: value });
   };
 
+  const refreshChats = async () => {
+    const response = await fetchChats();
+    return setChats(response.data.data.data);
+  };
+
   useEffect(() => {
     setIsFirstLoading(false);
     setChats(props.chats.data);
@@ -80,6 +86,7 @@ export const ChatProvider = ({ children }: PropsWithChildren) => {
     paginate: props.paginate ? props.chats : state.paginate,
     setChats,
     setPaginate,
+    refreshChats,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;

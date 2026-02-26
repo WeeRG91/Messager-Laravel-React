@@ -3,12 +3,24 @@ import { CHAT_TYPE } from "@/types/chat";
 import { useAppContext } from "@/Contexts/app-context";
 import moment from "moment";
 import ChatMessage from "@/Components/Chats/ChatMessage";
+import { RefObject } from "react";
 
-export default function ContentBody() {
+type ContentBodyProps = {
+  chatContainerRef: RefObject<HTMLDivElement>;
+  bottomRef: RefObject<HTMLDivElement>;
+  scrollToBottom: () => void;
+};
+
+export default function ContentBody({
+  chatContainerRef,
+  bottomRef,
+  scrollToBottom,
+}: ContentBodyProps) {
   const { auth } = useAppContext();
   const { user } = useChatMessageContext();
+
   return (
-    <div className="relative max-h-[100_-_120px] flex-1 overflow-auto p-2 pt-8">
+    <div className="relative max-h-[100_-_120px] flex-1 overflow-auto p-2 pt-8" ref={chatContainerRef}>
       <div className="flex flex-col items-center justify-center text-center">
         <div className="picture">
           <img
@@ -37,6 +49,8 @@ export default function ContentBody() {
       </div>
 
       <ChatMessage />
+
+      <div ref={bottomRef} className="h-0" />
     </div>
   );
 }
