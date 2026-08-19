@@ -18,11 +18,16 @@ export default function SidebarMini() {
   const { openModal } = useModalContext();
 
   const openPreference = () => {
-    openModal({view: "PREFERENCE", size: "lg"})
-  }
+    openModal({ view: "PREFERENCE", size: "lg" });
+  };
 
   return (
-    <div className="order-2 mt-auto flex flex-row justify-between gap-2 bg-background sm:order-1 sm:mt-0 sm:flex-col sm:items-center sm:justify-center sm:p-2">
+    <div
+      className={clsx(
+        "order-2 mt-auto flex-row justify-between gap-2 bg-background sm:order-1 sm:mt-0 sm:flex-col sm:items-center sm:justify-center sm:p-2",
+        route().current("chats.show") ? "hidden" : "flex",
+      )}
+    >
       <Link
         href={route("chats.index")}
         className={clsx(

@@ -7,8 +7,9 @@ import {
 } from "react";
 import Modal from "@/Components/Modal";
 import Preferences from "@/Components/Modals/Preferences";
+import DeleteMessageConfirmation from "@/Components/Modals/DeleteMessageConfirmation";
 
-type ModalViews = "PREFERENCE";
+type ModalViews = "PREFERENCE" | "DELETE_MESSAGE_CONFORMATION";
 
 type ModalSize = "sm" | "md" | "lg" | "xl" | "2xl";
 
@@ -66,7 +67,9 @@ const reducer = (state: State = initialState, action: Action) => {
 
 const ModalContext = createContext<State>(initialState);
 
-export const useModalContext = () => useContext(ModalContext);
+export function useModalContext<T = any>() {
+  return useContext<State<T>>(ModalContext);
+}
 
 export const ModalProvider = ({ children }: PropsWithChildren) => {
   const [state, dispatch] = useReducer<Reducer<State, Action>>(
@@ -94,11 +97,12 @@ export const ModalProvider = ({ children }: PropsWithChildren) => {
 };
 
 export const ModalChildren = () => {
-  const {isOpen, view, size, closeModal} = useModalContext();
+  const { isOpen, view, size, closeModal } = useModalContext();
 
   return (
     <Modal show={isOpen} onClose={closeModal} maxWidth={size}>
       {view === "PREFERENCE" && <Preferences />}
+      {view === "DELETE_MESSAGE_CONFORMATION" && <DeleteMessageConfirmation />}
     </Modal>
-  )
-}
+  );
+};

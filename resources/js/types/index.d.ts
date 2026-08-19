@@ -24,6 +24,6 @@ export type ChatMessagePageProps = PageProps<{
   user: ChatProfile;
   messages: ChatMessagePaginate;
   media: Attachment[];
-  files: Attachment;
+  files: Attachment[];
   links: Link[];
 }>;

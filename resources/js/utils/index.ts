@@ -26,3 +26,26 @@ export const relativeTime = (time: string) => {
     )
     .replace(" ago", "");
 };
+
+export const isImageLinkValid = (name: string | null): boolean => {
+  if (!name) return false;
+
+  const validExtensions = ["png", "jpg", "jpeg", "gif", "svg", "webp", "bmp"];
+  const extensions = name.split(".").pop()?.toLowerCase() ?? "";
+
+  return validExtensions.includes(extensions);
+};
+
+export const formatFileSize = (size: number): string => {
+  if (!size) return "";
+
+  if (size < 1024) {
+    return size.toFixed(2) + " B";
+  } else if (size < 1024 * 1024) {
+    return (size / 1024).toFixed(2) + " KB";
+  } else if (size < 1024 * 1024 * 1024) {
+    return (size / (1024 * 1024)).toFixed(2) + " MB";
+  } else {
+    return (size / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+  }
+};

@@ -1,13 +1,22 @@
 import clsx from "clsx";
 import { BsTrash } from "react-icons/bs";
+import { useModalContext } from "@/Contexts/modal-context";
+import { ChatMessage } from "@/types/chat-message";
 
 type DeleteMessageProps = {
+  message: ChatMessage;
   className?: string;
 };
 
-export default function DeleteMessage({ className }: DeleteMessageProps) {
+export default function DeleteMessage({ message, className }: DeleteMessageProps) {
+  const {openModal} = useModalContext();
+
   const deleteConfirmation = () => {
-    //Todo
+    openModal({
+      view: "DELETE_MESSAGE_CONFORMATION",
+      size: "lg",
+      payload: message,
+    });
   }
 
   return (

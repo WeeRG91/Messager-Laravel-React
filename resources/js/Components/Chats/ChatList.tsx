@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { relativeTime } from "@/utils";
 import { useChatContext } from "@/Contexts/chat-context";
 import BadgeChatNotification from "@/Components/Chats/BadgeChatNotification";
+import { markAsRead } from "@/Api/chat-message";
 
 type ChatListProps = {
   search: string;
@@ -22,7 +23,7 @@ export default function ChatList({
   const { chats } = useChatContext();
 
   const handleMarkAsRead = (chat: Chat) => {
-    // Mark as read
+    !chat.is_read && markAsRead(chat);
   };
 
   if (chats.length === 0) return;
@@ -41,65 +42,67 @@ export default function ChatList({
           return a.name.localeCompare(b.name);
         })
         .map((chat, index) => (
-          <div key={index} className="group relative flex items-center">
-            <Link
-              href={route(href, chat.id)}
-              as="button"
-              onClick={() => handleMarkAsRead(chat)}
-              className={clsx(
-                "flex1 relative flex w-full items-center gap-3 rounded-lg p-3 text-left transition-all group-hover:bg-secondary-default",
-                className,
-              )}
-            >
-              {search.length === 0 && chat.created_at ? (
-                <>
-                  <div className="relative shrink-0">
-                    <img
-                      src={chat.avatar}
-                      alt={chat.name}
-                      className="h-12 w-12 rounded-full border border-secondary-default"
-                    />
-                    {chat.is_online && <BadgeOnline />}
-                  </div>
-
-                  <div className="overflow-hidden">
-                    <h5 className="truncate font-medium">{chat.name}</h5>
-                    <div className="flex items-center text-sm text-secondary-foreground">
-                      <p
-                        className={clsx(
-                          "truncate",
-                          !chat.is_read && "font-medium text-foreground",
-                        )}
-                        dangerouslySetInnerHTML={{ __html: chat.body }}
+            <div key={index} className="group relative flex items-center">
+              <Link
+                href={route(href, chat.id)}
+                as="button"
+                onClick={() => handleMarkAsRead(chat)}
+                className={clsx(
+                  "flex1 relative flex w-full items-center gap-3 rounded-lg p-3 text-left transition-all group-hover:bg-secondary-default",
+                  className,
+                )}
+              >
+                {search.length === 0 && chat.created_at ? (
+                  <>
+                    <div className="relative shrink-0">
+                      <img
+                        src={chat.avatar}
+                        alt={chat.name}
+                        className="h-12 w-12 rounded-full border border-secondary-default"
                       />
-                      <span className="mx-1">.</span>
-                      <span className="shrink-0">
-                        {relativeTime(chat.created_at)}
-                      </span>
+                      {chat.is_online && <BadgeOnline />}
                     </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="relative shrink-0">
-                    <img
-                      src={chat.avatar}
-                      alt={chat.name}
-                      className="h-10 w-10 rounded-full border border-secondary-default"
-                    />
-                    {chat.is_online && <BadgeOnline />}
-                  </div>
 
-                  <div className="overflow-hidden">
-                    <h5 className="truncate font-medium">{chat.name}</h5>
-                  </div>
-                </>
-              )}
+                    <div className="overflow-hidden">
+                      <h5 className="truncate font-medium">{chat.name}</h5>
+                      <div className="flex items-center text-sm text-secondary-foreground">
+                        {chat.body && (
+                          <p
+                            className={clsx(
+                              "truncate",
+                              !chat.is_read && "font-medium text-foreground",
+                            )}
+                            dangerouslySetInnerHTML={{ __html: chat.body }}
+                          />
+                        )}
+                        <span className="mx-1">.</span>
+                        <span className="shrink-0">
+                          {relativeTime(chat.created_at)}
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="relative shrink-0">
+                      <img
+                        src={chat.avatar}
+                        alt={chat.name}
+                        className="h-10 w-10 rounded-full border border-secondary-default"
+                      />
+                      {chat.is_online && <BadgeOnline />}
+                    </div>
 
-              {!chat.is_read && <BadgeChatNotification />}
-            </Link>
-          </div>
-        ))}
+                    <div className="overflow-hidden">
+                      <h5 className="truncate font-medium">{chat.name}</h5>
+                    </div>
+                  </>
+                )}
+
+                {!chat.is_read && <BadgeChatNotification />}
+              </Link>
+            </div>
+          ))}
     </div>
   );
 }

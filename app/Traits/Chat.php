@@ -7,10 +7,13 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 use stdClass;
 
 trait Chat
 {
+    protected array $validImageExtensions = ["png", "jpg", "jpeg", "gif", "svg", "webp", "bmp"];
+
     /**
      * @return LengthAwarePaginator
      */
@@ -71,17 +74,33 @@ trait Chat
                 ->setPath(route('chats.users'));
 
             foreach ($chats as $key => $chat) {
+                $attachment = '';
+                if (!$chat->body && $chat->attachments) {
+                    $fileName = $chat->attachments->first()->file_name;
+                    if (in_array(pathinfo($fileName, PATHINFO_EXTENSION), $this->validImageExtensions)) {
+                        $attachment = 'sent an image';
+                    } else {
+                        $attachment = 'sent an attachment';
+                    }
+                }
+
                 $mapped = new stdClass();
+                $seenInId = collect(json_decode($chat->seen_in_id));
+
                 $mapped->id = $chat->another_user->id;
                 $mapped->name = $chat->another_user->name . ($chat->another_user->id === auth()->id() ? ' (You)' : '');
                 $mapped->avatar = $chat->another_user->avatar;
                 $mapped->from_id = $chat->from_id;
-                $mapped->body = $chat->body;
-                $mapped->is_read = true;
-                $mapped->is_replied = false;
-                $mapped->is_online = true;
+                $mapped->is_read = $seenInId->filter(fn ($item) => $item->id === auth()->id())->count() > 0;
+                $mapped->is_replied = $chat->another_user->id === $chat->from_id;
+                $mapped->is_online = $chat->another_user->is_online === true;
                 $mapped->created_at = $chat->created_at;
                 $mapped->chat_type = ChatMessage::CHATS;
+
+                $from = $chat->from_id === auth()->id() ? 'You ' : '';
+                $mapped->body = $chat->body
+                    ? $from . Str::limit(strip_tags($chat->body), 100)
+                    : $from . $attachment;
 
                 $chats[$key] = $mapped;
             }
@@ -99,16 +118,10 @@ trait Chat
         return ChatMessage::with([
                 'from',
                 'to',
-                'attachments'
+                'attachments' => fn ($query) => $query->with('sent_by')->deletedInIds()
             ])
-            ->where(function (Builder $query) use ($id) {
-                $query->where('from_id', auth()->id())
-                    ->where('to_id', $id);
-            })
-            ->orWhere(function (Builder $query) use ($id) {
-                $query->where('from_id', $id)
-                    ->where('to_id', auth()->id());
-            })
+            ->forUserOrGroup($id)
+            ->deletedInIds()
             ->selectRaw('
                 id,
                 from_id,

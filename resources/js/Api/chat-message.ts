@@ -1,18 +1,22 @@
-import { ChatMessage, ChatProfile } from "@/types/chat-message";
+import { Attachment, ChatMessage, ChatProfile } from "@/types/chat-message";
 import { AxiosResponse } from "axios";
+import { Chat } from "@/types/chat";
 
 export const saveMessage = ({
   user,
   message,
+  attachments,
 }: {
   user: ChatProfile;
   message: string;
+  attachments: File[];
 }): Promise<AxiosResponse<{ data: ChatMessage }>> => {
   return window.axios.post(
     route("chats.store"),
     {
       to_id: user.id,
       body: message,
+      attachments: attachments,
     },
     {
       headers: {
@@ -20,4 +24,25 @@ export const saveMessage = ({
       },
     },
   );
+};
+
+export const deleteMessage = (
+  message: ChatMessage,
+): Promise<AxiosResponse<{ data: null }>> => {
+  return window.axios.delete(route("chats.destroy", message.id));
+};
+
+export const deleteFileInChat = (
+  message: ChatMessage,
+  attachment: Attachment,
+): Promise<AxiosResponse<{ data: null }>> => {
+  return window.axios.delete(
+    route("chats.delete_file", [message.id, attachment.file_name]),
+  );
+};
+
+export const markAsRead = (
+  chat: Chat,
+): Promise<AxiosResponse<{ data: Chat }>> => {
+  return window.axios.post(route("chats.mark_as_read", chat.id));
 };
